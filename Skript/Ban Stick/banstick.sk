@@ -1,0 +1,11 @@
+on damage:
+    if attacker is holding a stick:
+        if name of attacker's tool is "BanStick":
+            if attacker has permission "banstick.use":
+                cancel event
+                set {_victim} to victim
+                if {_victim} is a player:
+                    broadcast "&c%attacker% &7đã ban &c%{_victim}% &7khỏi máy chủ!"
+                    ban {_victim} due to "Bị ban bởi %attacker%"
+            else:
+                send "&cBạn không có quyền sử dụng BanStick!" to attacker

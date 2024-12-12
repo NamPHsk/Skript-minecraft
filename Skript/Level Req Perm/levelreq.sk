@@ -1,0 +1,13 @@
+on death of player:
+    if attacker is a player:
+        add 1 to {kill_count.%uuid of attacker%}
+
+on join:
+    set {kill_count.%uuid of player%} to 0 if {kill_count.%uuid of player%} is not set
+
+every 1 minute:
+    loop all players:
+        if {kill_count.%uuid of loop-player%} >= 10:
+            if loop-player does not have permission "special.reward":
+                execute console command "lp user %name of loop-player% permission set special.reward true"
+                send "&a[Kill Reward] You have received a special permission!" to loop-player

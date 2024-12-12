@@ -1,0 +1,82 @@
+options:
+    prefix: &8[&bBlock Finder&8]
+
+command /timblock <text> <number> <number> <number> <number> <number> <number>:
+    aliases: findblock, tb, find
+    permission: skript.findblocks
+    permission message: &cBạn không có quyền sử dụng lệnh này!
+    usage: &c/timblock <block> <x1> <y1> <z1> <x2> <y2> <z2>
+    trigger:
+        if {finding::%player%} is true:
+            send "{@prefix} &cBạn đang trong quá trình tìm kiếm! Dùng &f/stopfind &cđể dừng"
+            stop
+            
+        set {_block} to arg-1
+        
+        # Lấy tọa độ từ tham số
+        set {_x1} to arg-2
+        set {_y1} to arg-3
+        set {_z1} to arg-4
+        set {_x2} to arg-5
+        set {_y2} to arg-6
+        set {_z2} to arg-7
+        
+        # Đảm bảo x1,y1,z1 là tọa độ nhỏ nhất
+        if {_x1} > {_x2}:
+            set {_temp} to {_x1}
+            set {_x1} to {_x2}
+            set {_x2} to {_temp}
+        if {_y1} > {_y2}:
+            set {_temp} to {_y1}
+            set {_y1} to {_y2}
+            set {_y2} to {_temp}
+        if {_z1} > {_z2}:
+            set {_temp} to {_z1}
+            set {_z1} to {_z2}
+            set {_z2} to {_temp}
+            
+        set {_count} to 0
+        set {finding::%player%} to true
+        send "{@prefix} &fĐang tìm kiếm &b%{_block}% &ftrong khu vực từ &e%{_x1}%, %{_y1}%, %{_z1}% &fđến &e%{_x2}%, %{_y2}%, %{_z2}%"
+        
+        # Lặp qua từng block trong khu vực
+        loop blocks in radius max({_x2} - {_x1}, {_y2} - {_y1}, {_z2} - {_z1}) around location({_x1}, {_y1}, {_z1}, world of player):
+            set {_x} to x-coordinate of loop-block
+            set {_y} to y-coordinate of loop-block
+            set {_z} to z-coordinate of loop-block
+            
+            # Chỉ xử lý block trong vùng đã chọn
+            if {_x} is between {_x1} and {_x2}:
+                if {_y} is between {_y1} and {_y2}:
+                    if {_z} is between {_z1} and {_z2}:
+                        if {finding::%player%} is not true:
+                            send "{@prefix} &cĐã dừng tìm kiếm!"
+                            stop
+                            
+                        set {_blockType} to "%type of loop-block%" in lowercase
+                        if {_block} contains " ":
+                            replace all " " with "_" in {_block}
+                        if {_blockType} contains {_block} in lowercase:
+                            add 1 to {_count}
+                            set {_x} to round(x-coordinate of loop-block)
+                            set {_y} to round(y-coordinate of loop-block)
+                            set {_z} to round(z-coordinate of loop-block)
+                            
+                            send "{@prefix} &aTìm thấy tại: &f%{_x}%, %{_y}%, %{_z}%"
+                            wait 1 tick
+        
+        delete {finding::%player%}
+        if {_count} is 0:
+            send "{@prefix} &cKhông tìm thấy &f%{_block}% &ctrong khu vực đã chọn!"
+            send "{@prefix} &eMẹo: Thử tìm các block như: &fdiamond_ore&e, &fstone&e, &fdirt"
+        else:
+            send "{@prefix} &aTổng cộng tìm thấy &f%{_count}% &ablock!"
+
+command /stopfind:
+    aliases: sf, stop
+    trigger:
+        if {finding::%player%} is true:
+            delete {finding::%player%}
+            send "{@prefix} &cĐã dừng tìm kiếm!"
+        else:
+            send "{@prefix} &cBạn không trong quá trình tìm kiếm nào!"

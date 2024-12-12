@@ -1,0 +1,9 @@
+on damage of entity:
+    if attacker is a player:
+        if name of attacker's tool is "&9Eternity's Edge":
+            set {_current_health} to victim's health
+            set {_damage} to {_current_health} * 0.5
+            
+            set victim's health to victim's health - {_damage}
+            
+            apply glowing to victim for 2 seconds

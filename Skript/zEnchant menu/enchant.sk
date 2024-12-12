@@ -1,0 +1,88 @@
+# Hệ thống enchant
+command /aenchant [<text>]:
+    permission: eternityenchant.use
+    permission message: "&cBạn không có quyền sử dụng lệnh này!"
+    trigger:
+        if arg-1 is not set:
+            send "&9=== Hướng dẫn Eternity Enchant ===" to player
+            send "&b/aenchant help &7- Hiển thị hướng dẫn sử dụng" to player
+            send "&b/aenchant apply &7- Áp dụng Eternity Enchant vào kiếm" to player
+            send "&b/aenchant upgrade &7- Nâng cấp Eternity Enchant" to player
+            send "&9=== Yêu cầu ===" to player
+            send "&7- Cần cầm kiếm khi sử dụng" to player
+            send "&7- Enchant yêu cầu level 10 để áp dụng" to player
+            send "&7- Nâng cấp yêu cầu level 20" to player
+            stop
+        
+        # Áp dụng enchant
+        if arg-1 is "apply":
+            # Kiểm tra người chơi đang cầm kiếm
+            if player's tool is a sword:
+                # Kiểm tra xem kiếm đã có enchant chưa
+                if lore of player's tool does not contain "&9Eternity Enchant":
+                    # Kiểm tra điều kiện enchant
+                    if player's level >= 10:
+                        set player's level to player's level - 10
+                        set {_lore::1} to "&9Eternity Enchant"
+                        set {_lore::2} to "&7Level: 1"
+                        set lore of player's tool to {_lore::*}
+                        send "&aĐã thêm Eternity Enchant vào kiếm!" to player
+                    else:
+                        send "&cBạn cần ít nhất level 10 để enchant!" to player
+                else:
+                    send "&cKiếm của bạn đã có Eternity Enchant!" to player
+            else:
+                send "&cBạn phải cầm kiếm để enchant!" to player
+        
+        # Nâng cấp enchant
+        else if arg-1 is "upgrade":
+            # Kiểm tra người chơi đang cầm kiếm
+            if player's tool is a sword:
+                # Kiểm tra kiếm có Eternity Enchant không
+                if lore of player's tool contains "&9Eternity Enchant":
+                    set {_current_level} to 1
+                    loop lore of player's tool:
+                        if loop-value contains "Level:":
+                            set {_current_level} to last element of (loop-value split by ": ") parsed as integer
+                    
+                    # Kiểm tra level hiện tại
+                    if {_current_level} < 3:
+                        if player's level >= 20:
+                            set player's level to player's level - 20
+                            set {_new_level} to {_current_level} + 1
+                            set {_lore::1} to "&9Eternity Enchant"
+                            set {_lore::2} to "&7Level: %{_new_level}%"
+                            set lore of player's tool to {_lore::*}
+                            send "&aNâng cấp Eternity Enchant lên Level %{_new_level}%!" to player
+                        else:
+                            send "&cBạn cần ít nhất level 20 để nâng cấp!" to player
+                    else:
+                        send "&cEnchant đã ở mức tối đa!" to player
+                else:
+                    send "&cKiếm của bạn không có Eternity Enchant!" to player
+            else:
+                send "&cBạn phải cầm kiếm để nâng cấp enchant!" to player
+        
+        # Argument không hợp lệ
+        else:
+            send "&cSử dụng /aenchant help để xem hướng dẫn!" to player
+# Hệ thống sát thương
+on damage of entity:
+    if attacker is a player:
+        # Kiểm tra permission để sử dụng enchant
+        if attacker has permission "eternityenchant.damage":
+            # Thay đổi điều kiện để bắt chính xác lore
+            if lore of attacker's tool contains "&9Eternity Enchant":
+                # Trích xuất cấp độ từ lore
+                set {_level} to 1
+                loop lore of attacker's tool:
+                    if loop-value contains "Level:":
+                        set {_level} to last element of (loop-value split by ": ") parsed as integer
+                
+                set {_current_health} to victim's health
+                # Tăng % sát thương theo cấp độ enchant
+                set {_damage} to {_current_health} * (0.5 + (0.1 * {_level}))
+                
+                set victim's health to victim's health - {_damage}
+                
+                apply glowing to victim for 2 seconds
