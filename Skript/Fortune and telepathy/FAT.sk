@@ -1,0 +1,42 @@
+on join:
+    set {minemode::%player%} to 0 if {minemode::%player%} is not set
+
+command /minemode [<text>]:
+    usage: &c/minemode [0/1/2]
+    permission: minemode.skript
+    permission message: &4You do not have permission to use this command.
+    aliases: /mm, /mining
+    trigger:
+        if arg-1 is not set:
+            send "&8&l▬▬▬▬▬▬▬▬▬▬ &6Mine Mode Status &8&l▬▬▬▬▬▬▬▬▬▬" to player
+            send "" to player
+            send "&7Current Mode: %{minemode::%player%}%" to player
+            send "" to player
+            send "&8&l» &70: &fVanilla Drop" to player
+            send "&8&l» &71: &6Fortune Drop" to player
+            send "&8&l» &72: &aFortune to Inventory" to player
+            send "" to player
+            send "&8&l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬" to player
+        else:
+            set {_mode} to arg-1 parsed as integer
+            if {_mode} is 0 or 1 or 2:
+                set {minemode::%player%} to {_mode}
+                send "&8[&6MineMode&8] &7Mode set to %{_mode}%:" to player
+                send "&7 0: Vanilla drop" to player
+                send "&7 1: Fortune drop" to player
+                send "&7 2: Fortune to inventory" to player
+            else:
+                send "&c[Error] Mode must be 0, 1, or 2" to player
+
+on mine:
+    if {minemode::%player%} is 0:
+        stop
+        
+    else if {minemode::%player%} is 1:
+        set event-block to air
+        drop (1*(level of fortune of player's tool)) of event-block at event-block
+        cancel drops
+
+    else if {minemode::%player%} is 2:
+        give player (1*(level of fortune of player's tool)) of event-block
+        cancel drops

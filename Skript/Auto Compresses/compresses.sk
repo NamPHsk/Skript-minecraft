@@ -1,0 +1,17 @@
+every second:
+    loop all players:
+        if loop-player's offhand tool is conduit named "IronAutoCompressor":
+            if loop-player has 64 iron ore:
+                set {_n} to number of iron ore in loop-player's inventory
+                set {_n} to {_n} / 64
+                set {_n} to floor({_n})
+                loop {_n} times:
+                    remove ({_n} * 64) of iron ore from loop-player's inventory
+                    give {_n} of raw iron named "&dCompressed iron ingot" with lore "tier: 2" to the loop-player
+            else if loop-player has 64 raw iron named "&dCompressed iron ingot" with lore "tier: 2":
+                set {_i} to number of raw iron named "&dCompressed iron ingot" with lore "tier: 2" in loop-player's inventory
+                set {_i} to {_i} / 64
+                set {_i} to floor({_i})
+                loop {_i} times:
+                    remove ({_i} * 64) of raw iron named "&dCompressed iron ingot" with lore "tier: 2" from loop-player's inventory
+                    give {_i} of iron ingots named "&dBetter Compressed iron ingot" with lore "tier: 3" to the loop-player

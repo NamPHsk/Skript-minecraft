@@ -1,0 +1,2 @@
+on right click on crafting table:
+    execute console command "/mi stations open crafting %players%" 

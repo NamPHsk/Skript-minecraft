@@ -1,0 +1,4 @@
+on right click:
+    if player's gamemode is survival:
+        if player's tool is firework named "&cᴛêɴ ʟửᴀ ᴠô ᴛậɴ":
+            give player 1 firework rocket named "&cᴛêɴ ʟửᴀ ᴠô ᴛậɴ"

@@ -1,0 +1,4 @@
+on right click:
+    if player's gamemode is survival:
+    block is crafting table:
+    cancel event
